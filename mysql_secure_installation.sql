@@ -1,0 +1,4 @@
+  CREATE USER 'jerome' IDENTIFIED BY 'password';
+  GRANT ALL PRIVILEGES ON *.* TO 'jerome';
+  CREATE DATABASE example;
+  FLUSH PRIVILEGES;
