@@ -1,5 +1,11 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
+$mysql_secure_installation = <<-SCRIPT
+  #!/bin/bash
+  apt-get update
+  apt-get install -y mysql-server
+  mysql < /tmp/mysql_secure_installation.sql
+  SCRIPT
 
 # All Vagrant configuration is done below. The "2" in Vagrant.configure
 # configures the configuration version (we support older styles for
@@ -33,8 +39,16 @@ Vagrant.configure("2") do |config|
     web.vm.provision "shell", inline: <<-SHELL
       apt-get update
       apt-get install -y apache2
-    
+
       echo "Hello from the vagrant provisioned server!" > /var/www/html/index.html
     SHELL
   end
+
+  config.vm.define "db" do |db|
+    db.vm.hostname = "mysqldb"
+    db.vm.network :private_network, ip: "192.168.2.4"
+    db.vm.provision "file", source: "mysql_secure_installation.sql", destination: "/tmp/mysql_secure_installation.sql"
+    db.vm.provision "shell", inline: $mysql_secure_installation
+  end
+
 end
