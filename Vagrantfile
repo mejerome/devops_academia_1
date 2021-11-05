@@ -7,8 +7,8 @@ $mysql_installation = <<-SCRIPT
   mysql < /tmp/mysql_secure_installation.sql
   SCRIPT
 
-Vagrant.configure("2") do |config|
 
+Vagrant.configure("2") do |config|
   config.vm.box = "generic/ubuntu2004"
 
   # Create a private network, which allows host-only access to the machine
