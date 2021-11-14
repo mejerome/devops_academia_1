@@ -1,0 +1,7 @@
+---
+- hosts: all
+  become: yes
+
+  tasks:
+  - name: Install web server
+    apt: name=nginx state=present
