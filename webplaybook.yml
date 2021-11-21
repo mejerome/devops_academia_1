@@ -3,5 +3,5 @@
   become: yes
 
   tasks:
-  - name: Install web server
-    apt: name=nginx state=present
+  - name: Install nginx web server
+    package: name=nginx state=present
