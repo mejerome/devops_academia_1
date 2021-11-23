@@ -1,12 +1,12 @@
 ---
-- hosts: all
+- hosts: localhost
   become: yes
+  connection: local
 
-  vars:
-    ansible_python_interpreter: /usr/bin/python3
-    user_name: "Jerome Tabiri"
-    user_email: "jtabiri@gmail.com"
-
+  vars_files:
+    - vars.yml
+    - secrets.yml
+ 
   tasks:
     - name: Update apt repo and cache on all Debian/Ubuntu boxes
       apt: 

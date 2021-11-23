@@ -20,9 +20,22 @@ Vagrant.configure("2") do |config|
     vb.cpus = "1"
   end
 
+  config.vm.define "haproxy" do |haproxy|
+    haproxy.vm.hostname = "haproxy"
+    haproxy.vm.network :private_network, ip: "192.168.56.4"
+  end
+
   config.vm.define "web" do |web|
     web.vm.hostname = "web"
     web.vm.network :private_network, ip: "192.168.56.5" 
+  end
+
+  config.vm.define "db" do |db|
+    db.vm.hostname = "db"
+    db.vm.network :private_network, ip: "192.168.56.6"
+    db.vm.provision "ansible" do |ansible|
+      ansible.playbook = "playbooks/msql_db.yml"
+    end
   end
 
   # config.vm.define "workstation" do |workstation|
