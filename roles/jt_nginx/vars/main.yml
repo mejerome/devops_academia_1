@@ -1,0 +1,3 @@
+---
+# vars file for jt_nginx
+nginx_version: "1.20"

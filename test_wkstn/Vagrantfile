@@ -8,25 +8,32 @@
 Vagrant.configure("2") do |config|
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://vagrantcloud.com/search.
-  config.vm.box = "generic/ubuntu2004"
-  config.vm.synced_folder "../", "/vagrant"
-  config.ssh.password = "vagrant"
-  
+  config.vm.box = "generic/debian10"
+  config.vm.synced_folder "../", "/vagrant"  
   #
   config.vm.provider "virtualbox" do |vb|
     # Display the VirtualBox GUI when booting the machine
     vb.gui = false
     # Customize the amount of memory on the VM:
-    vb.memory = "4096"
+    vb.memory = "2048"
     vb.cpus = "2"
   end
   
   config.vm.define "control" do |control|
     control.vm.hostname = "control"
-    control.vm.network :public_network, type: "dhcp"
+    control.vm.network "private_network", ip: "192.168.56.20"
     control.vm.provision "ansible_local" do |ansible|
       ansible.playbook = "workstation.yml"
     end
     control.vm.provision "file", source: "~/.aws", destination: "~/.aws"
+  end
+
+  config.vm.define "worker" do |worker|
+    worker.vm.hostname = "worker"
+    worker.vm.box = "generic/centos8"
+    worker.vm.network "private_network", ip: "192.168.56.21"
+    worker.vm.provision "ansible_local" do |ansible|
+      ansible.playbook = "webplaybook.yml"
+    end
   end
 end

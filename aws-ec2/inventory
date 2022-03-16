@@ -1,0 +1,6 @@
+[wordpress]
+ec2-18-198-3-161.eu-central-1.compute.amazonaws.com
+
+[wordpress:vars]
+ansible_ssh_user=ubuntu
+ansible_ssh_private_key_file=../../newec2-key.pem

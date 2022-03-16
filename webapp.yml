@@ -1,5 +1,5 @@
 ---
-- hosts: app
+- hosts: wordpress
   become: true
 
   tasks:
