@@ -1,7 +1,7 @@
 ---
-- hosts: all
+- hosts: localhost
   become: true
-  # connection: local
+  connection: local
 
   vars:
     ansible_python_interpreter: /usr/bin/python3
@@ -19,6 +19,11 @@
         url: "https://apt.releases.hashicorp.com/gpg"
         state: present
 
+    - name: Add apt repository for stable terraform
+      apt_repository:
+        repo: "deb [arch=amd64] https://apt.releases.hashicorp.com focal main"
+        state: present
+
     - name: Add apt repository for stable version of docker
       apt_repository:
         repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable
@@ -30,11 +35,6 @@
         update_cache: yes 
         force_apt_get: yes 
         cache_valid_time: 3600
-
-    # - name: Upgrade all packages on servers
-    #   apt: 
-    #     upgrade: dist 
-    #     force_apt_get: yes
 
     - name: Install DevOps packages
       apt: 
@@ -52,8 +52,8 @@
           - ansible 
           - git
           - awscli
-          # - virtualbox
-          # - terraform
+          - virtualbox
+          - terraform
         state: latest
 
     - name: Download vagrant package with wget
@@ -77,8 +77,9 @@
 
     - name: Add user to docker group
       user:
-        name: "$USER"
-        group: docker
+        name: "jerome"
+        groups: docker
+        append: true
 
     - name: Download docker-compose {{ docker_compose_version }}
       get_url:
