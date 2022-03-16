@@ -1,27 +1,48 @@
 ---
-- hosts: localhost
-  become: yes
-  connection: local
+- hosts: all
+  become: true
+  # connection: local
 
-  vars_files:
-    - vars.yml
-    - secrets.yml
- 
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+    user_name: "Jerome Tabiri"
+    user_email: "jtabiri@gmail.com"
+
   tasks:
+    - name: Add GPG key for docker repository
+      apt_key:
+        url: "https://download.docker.com/linux/ubuntu/gpg"
+        state: present
+
+    - name: Add GPG key for terraform repository
+      apt_key:
+        url: "https://apt.releases.hashicorp.com/gpg"
+        state: present
+
+    - name: Add apt repository for stable version of docker
+      apt_repository:
+        repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable
+        state: present
+
+  
     - name: Update apt repo and cache on all Debian/Ubuntu boxes
       apt: 
         update_cache: yes 
         force_apt_get: yes 
         cache_valid_time: 3600
 
-    - name: Upgrade all packages on servers
-      apt: 
-        upgrade: dist 
-        force_apt_get: yes
+    # - name: Upgrade all packages on servers
+    #   apt: 
+    #     upgrade: dist 
+    #     force_apt_get: yes
 
     - name: Install DevOps packages
       apt: 
         name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - software-properties-common
           - git
           - python3-pip
           - python3-dev
@@ -31,10 +52,49 @@
           - ansible 
           - git
           - awscli
+          # - virtualbox
+          # - terraform
         state: latest
+
+    - name: Download vagrant package with wget
+      get_url: 
+        url: https://releases.hashicorp.com/vagrant/1.8.5/vagrant_1.8.5_x86_64.deb
+        dest: /tmp/vagrant.deb
+
+    - name: Install vagrant package with dpkg
+      shell: dpkg -i /tmp/vagrant.deb
+
+    - name: Install Docker
+      apt:
+        name: "{{ packages }}"
+        state: present
+        update_cache: yes
+      vars:
+        packages:
+        - docker-ce
+        - docker-ce-cli 
+        - containerd.io
+
+    - name: Add user to docker group
+      user:
+        name: "$USER"
+        group: docker
+
+    - name: Download docker-compose {{ docker_compose_version }}
+      get_url:
+        url : https://github.com/docker/compose/releases/download/1.29.2/docker-compose-Linux-x86_64
+        dest: ~/docker-compose
+        mode: '+x'
+
+    - name: Check docker-compose exists
+      stat: path=~/docker-compose
+      register: docker_compose
+
+    - name: Move docker-compose to /usr/local/bin/docker-compose
+      command: mv ~/docker-compose /usr/local/bin/docker-compose
+      when: docker_compose.stat.exists
 
     - name: Setup initial git config
       shell: |
           git config --global user.name "{{ user_name }}"
           git config --global user.email "{{ user_email }}"
-  
