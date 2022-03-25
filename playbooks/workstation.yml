@@ -19,6 +19,11 @@
         url: "https://apt.releases.hashicorp.com/gpg"
         state: present
 
+    - name: Add key 
+      apt_key:
+        url: https://www.virtualbox.org/download/oracle_vbox_2016.asc
+        state: present
+
     - name: Add apt repository for stable terraform
       apt_repository:
         repo: "deb [arch=amd64] https://apt.releases.hashicorp.com focal main"
@@ -29,7 +34,11 @@
         repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable
         state: present
 
-  
+    - name: Add apt repository for virtualbox 6.1
+      apt_repository:
+        repo: deb [arch=amd64] https://download.virtualbox.org/virtualbox/debian focal contrib
+        state: present
+
     - name: Update apt repo and cache on all Debian/Ubuntu boxes
       apt: 
         update_cache: yes 
@@ -52,17 +61,10 @@
           - ansible 
           - git
           - awscli
-          - virtualbox
+          - virtualbox-6.1
           - terraform
+          - vagrant
         state: latest
-
-    - name: Download vagrant package with wget
-      get_url: 
-        url: https://releases.hashicorp.com/vagrant/1.8.5/vagrant_1.8.5_x86_64.deb
-        dest: /tmp/vagrant.deb
-
-    - name: Install vagrant package with dpkg
-      shell: dpkg -i /tmp/vagrant.deb
 
     - name: Install Docker
       apt:
